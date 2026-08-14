@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import axios from 'axios';
 import QRCode from 'react-qr-code';
 import QRCodeGenerator from 'qrcode';
@@ -10,10 +10,13 @@ function App(){
   const [shortUrl,setShortUrl]=useState("");
   const[copied,setCopied]=useState(false);
   const [ qrimage,setQrimage] = useState("");
+  const [loading,setLoading]=useState(false);
+
+
 
   const handleShorten = async ()=>{
-    if(!url)return;
-
+    if(!url || loading)return;
+    setLoading(true);
     try{
       const res = await axios.post(`${API_BASE_URL}/shorten`,{
         originalUrl:url
@@ -29,6 +32,9 @@ function App(){
     }catch(err){
       console.log(err);
       alert("Something went wrong");
+    }
+    finally{
+      setLoading(false);
     }
   }
 
@@ -54,6 +60,7 @@ function App(){
         <button
           onClick={handleShorten} 
           className="btn btn-primary w-full sm:auto"
+        disabled={loading}
         >
           Shorten
         </button>
